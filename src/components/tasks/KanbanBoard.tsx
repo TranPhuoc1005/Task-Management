@@ -6,7 +6,7 @@ import KanbanColumn from "./KanbanColumn";
 import { useTasks } from "@/hook/useTasks";
 
 export default function KanbanBoard() {
-    const { tasksQuery, addTask, deleteTask, moveTask } = useTasks(); // 👈 dùng hook từ Supabase
+    const { tasksQuery, moveTask } = useTasks();
     const [draggedTask, setDraggedTask] = useState<Task | null>(null);
 
     if (tasksQuery.isLoading) return <p className="p-6">Loading tasks...</p>;

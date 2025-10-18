@@ -88,7 +88,7 @@ export function useTasks() {
             console.log('✅ Task moved successfully:', data);
             return data;
         },
-        onSuccess: (data) => {
+        onSuccess: () => {
             console.log('🔄 Refreshing queries...');
 
             // Refresh tasks list

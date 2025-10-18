@@ -16,6 +16,7 @@ export interface ActivityLog {
     user_name?: string;
     created_at: string;
     task?: Task;
+    changes_count?: number;
 }
 
 export function useNotifications() {
@@ -122,7 +123,6 @@ export function useNotifications() {
 
                 if (tasksError) throw tasksError;
 
-                // Convert tasks thành activities
                 const now = Date.now();
                 const taskActivities: ActivityLog[] = (tasks || [])
                     .filter(task => {
@@ -150,28 +150,21 @@ export function useNotifications() {
                 return taskActivities;
             }
 
-            // Group activities theo task_id và chỉ lấy activity mới nhất trong 5 phút
             const groupedActivities = new Map<number, ActivityLog>();
-            const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
 
             for (const activity of activities as ActivityLog[]) {
                 const activityTime = new Date(activity.created_at).getTime();
                 const existing = groupedActivities.get(activity.task_id);
 
                 if (!existing) {
-                    // Chưa có activity nào của task này
                     groupedActivities.set(activity.task_id, activity);
                 } else {
                     const existingTime = new Date(existing.created_at).getTime();
 
-                    // Nếu activity mới này cách activity cũ > 5 phút, thêm vào
                     if (Math.abs(activityTime - existingTime) > (5 * 60 * 1000)) {
-                        // Tạo một unique key bằng cách combine task_id và timestamp
                         const uniqueKey = activity.task_id * 1000000 + Math.floor(activityTime / 1000);
                         groupedActivities.set(uniqueKey, activity);
                     } else if (activityTime > existingTime) {
-                        // Nếu trong cùng khoảng 5 phút, chỉ giữ activity mới nhất
-                        // và gộp các thay đổi lại
                         const combinedActivity = {
                             ...activity,
                             action: 'updated' as const,

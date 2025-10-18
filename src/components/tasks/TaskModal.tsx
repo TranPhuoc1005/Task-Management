@@ -22,7 +22,6 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { X } from "lucide-react";
 
 interface TaskModalProps {
     open: boolean;
@@ -46,7 +45,7 @@ export default function TaskModal({
         status: task?.status || defaultStatus,
         priority: task?.priority || "medium",
         assignee: task?.assignee || "",
-        dueDate: task?.dueDate || "",
+        dueDate: task?.due_date || "",
         tags: task?.tags?.join(", ") || "",
     });
 

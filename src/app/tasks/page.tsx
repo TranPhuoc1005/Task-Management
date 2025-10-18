@@ -5,7 +5,7 @@ import { useTasks } from "@/hook/useTasks";
 import { Filter, SlidersHorizontal } from "lucide-react";
 
 export default function TasksPage() {
-    const { tasksQuery, addTask, deleteTask } = useTasks();
+    const { tasksQuery } = useTasks();
     if(tasksQuery.isLoading) return <p className="p-6">Loading tasks...</p>
     if(tasksQuery.error) {
         return (

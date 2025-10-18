@@ -21,9 +21,7 @@ import Link from "next/link";
 import { useNotifications, ActivityLog } from "@/hook/useNotifications";
 
 export default function NotificationDropdown() {
-    const { dueSoonTasks, recentActivities, totalNotifications, isLoading } =
-        useNotifications();
-
+    const { dueSoonTasks, recentActivities, totalNotifications, isLoading } = useNotifications();
     const formatTimeAgo = (date: string) => {
         if (!date) return "Unknown";
 
@@ -106,7 +104,7 @@ export default function NotificationDropdown() {
 
     const getActivityText = (activity: ActivityLog) => {
         const userName = activity.user_name || "Someone";
-        const changesCount = (activity as any).changes_count;
+        const changesCount = activity.changes_count;
 
         switch (activity.action) {
             case "created":
