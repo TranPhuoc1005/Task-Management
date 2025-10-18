@@ -5,16 +5,15 @@ interface TaskStore {
     columns: Column[];
     setColumns: (columns: Column[]) => void;
     moveTask: (
-        taskId: string,
+        taskId: number,
         fromStatus: Task["status"],
         toStatus: Task["status"]
     ) => void;
     addTask: (task: Task) => void;
-    updateTask: (taskId: string, updates: Partial<Task>) => void;
-    deleteTask: (taskId: string) => void;
+    updateTask: (taskId: number, updates: Partial<Task>) => void;
+    deleteTask: (taskId: number) => void;
 }
 
-// Mock data
 const initialColumns: Column[] = [];
 
 export const useTaskStore = create<TaskStore>((set) => ({
