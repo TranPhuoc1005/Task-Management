@@ -108,10 +108,10 @@ export default function TaskCard({ task, onDragStart }: TaskCardProps) {
                                 <span>{task.assignee}</span>
                             </div>
                         )}
-                        {task.dueDate && (
+                        {task.due_date && (
                             <div className="flex items-center gap-1">
                                 <Calendar className="w-3 h-3" />
-                                <span>{task.dueDate}</span>
+                                <span>{task.due_date}</span>
                             </div>
                         )}
                     </div>
