@@ -202,8 +202,8 @@ export default function ProfilePage() {
 
             {/* Avatar Section */}
             <div className="bg-white rounded-xl border p-8 mb-6">
-                <div className="flex items-center space-x-6">
-                    <div className="relative">
+                <div className="flex flex-col justify-center items-center md:justify-start space-x-6 md:flex-row gap-5">
+                    <div className="relative !mr-0">
                         <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center overflow-hidden">
                             {profile?.avatar_url ? (
                                 <Image src={profile.avatar_url} width={96} height={96} alt="Avatar" className="w-full h-full object-cover" />
@@ -225,9 +225,9 @@ export default function ProfilePage() {
                         </label>
                     </div>
                     <div>
-                        <h2 className="text-xl font-bold text-slate-900">{profile?.full_name || "No name set"}</h2>
+                        <h2 className="text-xl font-bold text-slate-900 md:text-left text-center">{profile?.full_name || "No name set"}</h2>
                         <p className="text-slate-600">{profile?.email}</p>
-                        <div className="mt-2">
+                        <div className="mt-2 md:text-left text-center">
                             <span
                                 className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getRoleBadgeColor(
                                     profile?.role || "employee"

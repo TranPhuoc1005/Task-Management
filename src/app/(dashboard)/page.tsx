@@ -68,7 +68,7 @@ export default function HomePage() {
     return (
         <div className="max-w-7xl mx-auto px-6 py-8">
             {/* Page Title with Date Range Filter */}
-            <div className="mb-8 flex items-center justify-between">
+            <div className="mb-8 flex flex-col items-center justify-between md:flex-row">
                 <div>
                     <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
                     <p className="text-slate-600 mt-2">Welcome back! Here&apos;s your task overview.</p>

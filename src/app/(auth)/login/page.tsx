@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { motion } from "framer-motion";
+import { Loader2, LogIn } from "lucide-react";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("tranphuoc1005@gmail.com");
@@ -35,27 +37,36 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-50">
-            <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-lg">
-                <div className="text-center">
-                    <h2 className="text-3xl font-bold text-slate-900">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 px-4">
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 border border-slate-100">
+                {/* Header */}
+                <div className="text-center mb-8">
+                    <h2 className="text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                         TaskPro
                     </h2>
-                    <p className="mt-2 text-sm text-slate-600">
-                        Sign in to your account
-                    </p>
+                    <p className="mt-2 text-slate-500 text-sm">Sign in to your workspace</p>
                 </div>
 
-                <form onSubmit={handleLogin} className="mt-8 space-y-6">
+                {/* Form */}
+                <form onSubmit={handleLogin} className="space-y-5">
                     {error && (
-                        <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
+                        <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="bg-red-50 text-red-700 border border-red-200 p-3 rounded-lg text-sm text-center">
                             {error}
-                        </div>
+                        </motion.div>
                     )}
 
                     <div className="space-y-4">
                         <div>
-                            <Label htmlFor="email">Email</Label>
+                            <Label htmlFor="email" className="text-slate-700">
+                                Email
+                            </Label>
                             <Input
                                 id="email"
                                 type="email"
@@ -63,11 +74,14 @@ export default function LoginPage() {
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="you@example.com"
                                 required
+                                className="mt-1 focus-visible:ring-blue-500"
                             />
                         </div>
 
                         <div>
-                            <Label htmlFor="password">Password</Label>
+                            <Label htmlFor="password" className="text-slate-700">
+                                Password
+                            </Label>
                             <Input
                                 id="password"
                                 type="password"
@@ -75,15 +89,29 @@ export default function LoginPage() {
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"
                                 required
+                                className="mt-1 focus-visible:ring-blue-500"
                             />
                         </div>
                     </div>
 
-                    <Button type="submit" className="w-full" disabled={loading}>
-                        {loading ? "Signing in..." : "Sign in"}
+                    <Button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all duration-200">
+                        {loading ? (
+                            <span className="flex items-center justify-center gap-2">
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                Signing in...
+                            </span>
+                        ) : (
+                            <span className="flex items-center justify-center gap-2">
+                                <LogIn className="w-4 h-4" />
+                                Sign in
+                            </span>
+                        )}
                     </Button>
                 </form>
-            </div>
+            </motion.div>
         </div>
     );
 }
