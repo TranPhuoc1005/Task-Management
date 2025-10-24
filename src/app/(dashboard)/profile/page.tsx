@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -58,6 +58,10 @@ export default function ProfilePage() {
             setLoading(false);
         }
     }, [supabase]);
+
+    useEffect(() => {
+        fetchProfile();
+    }, [fetchProfile]);
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
