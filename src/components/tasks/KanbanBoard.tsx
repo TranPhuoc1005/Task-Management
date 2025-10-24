@@ -13,9 +13,6 @@ export default function KanbanBoard() {
 
     const isAdminOrManager = currentUser?.profile?.role === "admin" || currentUser?.profile?.role === "manager";
 
-    if (tasksQuery.isLoading) return <p className="p-6">Loading tasks...</p>;
-    if (tasksQuery.error) return <p className="p-6 text-red-500">Error: {tasksQuery.error.message}</p>;
-
     // Filter tasks dựa vào toggle
     const filteredTasks = useMemo(() => {
         const tasks = tasksQuery.data || [];
@@ -23,10 +20,12 @@ export default function KanbanBoard() {
         return tasks.filter((task) => !task.user_id);
     }, [tasksQuery.data, showOnlyUnassigned]);
 
-    // Đếm số task chưa assign
     const unassignedCount = useMemo(() => {
         return (tasksQuery.data || []).filter((task) => !task.user_id).length;
     }, [tasksQuery.data]);
+
+    if (tasksQuery.isLoading) return <p className="p-6">Loading tasks...</p>;
+    if (tasksQuery.error) return <p className="p-6 text-red-500">Error: {tasksQuery.error.message}</p>;
 
     const columns: Column[] = [
         {
