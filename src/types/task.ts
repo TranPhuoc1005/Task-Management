@@ -9,6 +9,7 @@ export interface Task {
   tags?: string[];
   created_at?: string;
   updated_at?: string;
+  user_id?: string | null
 }
 
 export interface Column {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Task } from "@/types/task";
 import { useTasks } from "@/hook/useTasks";
 import {
@@ -22,11 +22,12 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { createClient } from "@/lib/supabase/client";
 
 interface TaskModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    task?: Task; // Nếu có task thì là edit, không có thì là create
+    task?: Task;
     defaultStatus?: Task["status"];
 }
 
@@ -34,9 +35,11 @@ export default function TaskModal({
     open,
     onOpenChange,
     task,
-    defaultStatus = "todo",
+    defaultStatus,
 }: TaskModalProps) {
     const { addTask, updateTask } = useTasks();
+    const supabase = createClient();
+    const [users, setUsers] = useState<any[]>([]);
     const isEdit = !!task;
 
     const [formData, setFormData] = useState({
@@ -47,9 +50,27 @@ export default function TaskModal({
         assignee: task?.assignee || "",
         dueDate: task?.due_date || "",
         tags: task?.tags?.join(", ") || "",
+        user_id: task?.user_id || "",
     });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    useEffect(() => {
+        async function fetchUsers() {
+            const { data, error } = await supabase
+                .from("profiles")
+                .select("id, email, full_name")
+                .order("full_name");
+
+            if (!error && data) {
+                setUsers(data);
+            }
+        }
+
+        if (open) {
+            fetchUsers();
+        }
+    }, [open, supabase]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -66,6 +87,7 @@ export default function TaskModal({
                 tags: formData.tags
                     ? formData.tags.split(",").map((t) => t.trim())
                     : [],
+                user_id: formData.user_id || undefined,
             };
 
             if (isEdit && task) {
@@ -95,6 +117,7 @@ export default function TaskModal({
             assignee: "",
             dueDate: "",
             tags: "",
+            user_id: task?.user_id || "",
         });
     };
 
@@ -113,6 +136,26 @@ export default function TaskModal({
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="user">Assign To</Label>
+                        <Select
+                            value={formData.user_id}
+                            onValueChange={(value) =>
+                                setFormData({ ...formData, user_id: value })
+                            }
+                        >
+                            <SelectTrigger id="user">
+                                <SelectValue placeholder="Select user" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {users.map((user) => (
+                                    <SelectItem key={user.id} value={user.id}>
+                                        {user.full_name || user.email}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
                     {/* Title */}
                     <div className="space-y-2">
                         <Label htmlFor="title">
@@ -122,13 +165,15 @@ export default function TaskModal({
                             id="title"
                             value={formData.title}
                             onChange={(e) =>
-                                setFormData({ ...formData, title: e.target.value })
+                                setFormData({
+                                    ...formData,
+                                    title: e.target.value,
+                                })
                             }
                             placeholder="Enter task title"
                             required
                         />
                     </div>
-
                     {/* Description */}
                     <div className="space-y-2">
                         <Label htmlFor="description">Description</Label>
@@ -145,7 +190,6 @@ export default function TaskModal({
                             rows={3}
                         />
                     </div>
-
                     {/* Status & Priority */}
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
@@ -167,7 +211,9 @@ export default function TaskModal({
                                     <SelectItem value="in-progress">
                                         In Progress
                                     </SelectItem>
-                                    <SelectItem value="review">Review</SelectItem>
+                                    <SelectItem value="review">
+                                        Review
+                                    </SelectItem>
                                     <SelectItem value="done">Done</SelectItem>
                                 </SelectContent>
                             </Select>
@@ -189,13 +235,14 @@ export default function TaskModal({
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="low">Low</SelectItem>
-                                    <SelectItem value="medium">Medium</SelectItem>
+                                    <SelectItem value="medium">
+                                        Medium
+                                    </SelectItem>
                                     <SelectItem value="high">High</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
                     </div>
-
                     {/* Assignee & Due Date */}
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
@@ -217,7 +264,7 @@ export default function TaskModal({
                             <Label htmlFor="dueDate">Due Date</Label>
                             <Input
                                 id="dueDate"
-                                type="date"
+                                type="datetime-local"
                                 value={formData.dueDate}
                                 onChange={(e) =>
                                     setFormData({
@@ -228,7 +275,6 @@ export default function TaskModal({
                             />
                         </div>
                     </div>
-
                     {/* Tags */}
                     <div className="space-y-2">
                         <Label htmlFor="tags">Tags</Label>
@@ -236,12 +282,14 @@ export default function TaskModal({
                             id="tags"
                             value={formData.tags}
                             onChange={(e) =>
-                                setFormData({ ...formData, tags: e.target.value })
+                                setFormData({
+                                    ...formData,
+                                    tags: e.target.value,
+                                })
                             }
                             placeholder="design, ui/ux, backend (comma separated)"
                         />
-                    </div>F
-
+                    </div>
                     <DialogFooter>
                         <Button
                             type="button"

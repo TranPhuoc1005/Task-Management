@@ -38,7 +38,7 @@ export default function TasksPage() {
                 </div>
             </div>
 
-            <div className="flex-1 overflow-hidden">
+            <div className="flex-1">
                 <KanbanBoard />
             </div>
         </div>
