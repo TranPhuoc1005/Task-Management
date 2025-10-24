@@ -24,7 +24,7 @@ export default function KanbanColumn({ column, onDragStart, onDragOver, onDrop }
         return <div className="w-80 bg-slate-50 rounded-lg p-4 text-slate-500 text-sm">Loading user...</div>;
     }
 
-    const canCreateTask = currentUser?.role === "admin" || currentUser?.role === "manager";
+    const canCreateTask = currentUser?.profile?.role === "admin" || currentUser?.profile?.role === "manager";
 
     const handleDragOver = (e: React.DragEvent) => {
         e.preventDefault();
