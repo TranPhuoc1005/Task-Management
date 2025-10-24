@@ -111,10 +111,18 @@ export default function HomePage() {
             {/* Charts Section */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 {/* Tasks by Status Chart */}
-                <TasksChart title="Tasks by Status" data={tasksByStatus as any} dataKey="count" nameKey="status" />
-
-                {/* Tasks by Priority Chart */}
-                <TasksChart title="Tasks by Priority" data={tasksByPriority as any} dataKey="count" nameKey="priority" />
+                <TasksChart
+                    title="Tasks by Status"
+                    data={tasksByStatus as { status: string; count: number }[]}
+                    dataKey="count"
+                    nameKey="status"
+                />
+                <TasksChart
+                    title="Tasks by Priority"
+                    data={tasksByPriority as { priority: string; count: number }[]}
+                    dataKey="count"
+                    nameKey="priority"
+                />
 
                 <TaskTrendsChart />
             </div>

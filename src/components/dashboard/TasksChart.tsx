@@ -2,14 +2,16 @@
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
+interface TasksChartData {
+  color?: string;
+  [key: string]: string | number | undefined;
+}
+
 interface TasksChartProps {
-    title: string;
-    data: Array<{
-        [key: string]: string | number;
-        color: string;
-    }>;
-    dataKey: string;
-    nameKey: string;
+  title: string;
+  data: TasksChartData[];
+  dataKey: string;
+  nameKey: string;
 }
 
 export default function TasksChart({ title, data, dataKey, nameKey }: TasksChartProps) {
@@ -40,7 +42,7 @@ export default function TasksChart({ title, data, dataKey, nameKey }: TasksChart
                     />
                     <Bar dataKey={dataKey} radius={[8, 8, 0, 0]}>
                         {data.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
+                            <Cell key={`cell-${index}`} fill={entry.color ?? "#3b82f6"} />
                         ))}
                     </Bar>
                 </BarChart>
@@ -52,7 +54,7 @@ export default function TasksChart({ title, data, dataKey, nameKey }: TasksChart
                     <div key={index} className="flex items-center gap-2">
                         <div 
                             className="w-3 h-3 rounded-full"
-                            style={{ backgroundColor: item.color }}
+                            style={{ backgroundColor: item.color ?? "#3b82f6" }}
                         />
                         <span className="text-sm text-slate-600">
                             {item[nameKey]}: <span className="font-semibold">{item[dataKey]}</span>
