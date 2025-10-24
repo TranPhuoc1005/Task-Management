@@ -154,6 +154,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                                         src={userProfile.avatar_url}
                                         alt="Avatar"
                                         className="w-full h-full object-cover"
+                                        width={40}
+                                        height={40}
                                     />
                                 ) : (
                                     <span className="text-sm font-semibold">
