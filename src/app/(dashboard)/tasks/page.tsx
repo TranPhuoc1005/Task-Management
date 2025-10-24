@@ -1,29 +1,26 @@
-"use client"
+"use client";
 
 import KanbanBoard from "@/components/tasks/KanbanBoard";
 import { useTasks } from "@/hook/useTasks";
 import { Filter, SlidersHorizontal } from "lucide-react";
 
 export default function TasksPage() {
-    const { tasksQuery } = useTasks();
-    if(tasksQuery.isLoading) return <p className="p-6">Loading tasks...</p>
-    if(tasksQuery.error) {
-        return (
-            <p className="p-6 text-red-500">
-                Error: {tasksQuery.error.message}
-            </p>
-        )
+    const { tasksQuery, addTask, updateTask, moveTask, deleteTask, currentUser } = useTasks();
+
+    // Kiểm tra điều kiện SAU khi đã gọi hooks
+    if (!currentUser) {
+        return <div>Loading...</div>;
+    }
+
+    if (tasksQuery.isLoading) {
+        return <div>Loading tasks...</div>;
     }
     return (
         <div className="flex flex-col h-full">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-white">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900">
-                        Tasks Board
-                    </h1>
-                    <p className="text-sm text-slate-600 mt-1">
-                        Manage your tasks with drag and drop
-                    </p>
+                    <h1 className="text-2xl font-bold text-slate-900">Tasks Board</h1>
+                    <p className="text-sm text-slate-600 mt-1">Manage your tasks with drag and drop</p>
                 </div>
 
                 <div className="flex items-center gap-3">

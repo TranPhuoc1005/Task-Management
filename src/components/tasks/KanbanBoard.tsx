@@ -1,48 +1,57 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Column, Task } from "@/types/task";
 import KanbanColumn from "./KanbanColumn";
 import { useTasks } from "@/hook/useTasks";
+import { UserX, Users } from "lucide-react";
 
 export default function KanbanBoard() {
-    const { tasksQuery, moveTask } = useTasks();
+    const { tasksQuery, moveTask, currentUser } = useTasks();
     const [draggedTask, setDraggedTask] = useState<Task | null>(null);
+    const [showOnlyUnassigned, setShowOnlyUnassigned] = useState(false);
+
+    const isAdminOrManager = currentUser?.profile?.role === "admin" || currentUser?.profile?.role === "manager";
 
     if (tasksQuery.isLoading) return <p className="p-6">Loading tasks...</p>;
-    if (tasksQuery.error)
-        return (
-            <p className="p-6 text-red-500">
-                Error: {tasksQuery.error.message}
-            </p>
-        );
+    if (tasksQuery.error) return <p className="p-6 text-red-500">Error: {tasksQuery.error.message}</p>;
 
-    const tasks = tasksQuery.data || [];
+    // Filter tasks dựa vào toggle
+    const filteredTasks = useMemo(() => {
+        const tasks = tasksQuery.data || [];
+        if (!showOnlyUnassigned) return tasks;
+        return tasks.filter((task) => !task.user_id);
+    }, [tasksQuery.data, showOnlyUnassigned]);
+
+    // Đếm số task chưa assign
+    const unassignedCount = useMemo(() => {
+        return (tasksQuery.data || []).filter((task) => !task.user_id).length;
+    }, [tasksQuery.data]);
 
     const columns: Column[] = [
         {
             id: "todo",
             title: "To Do",
             status: "todo",
-            tasks: tasks.filter((t) => t.status === "todo"),
+            tasks: filteredTasks.filter((t) => t.status === "todo"),
         },
         {
             id: "in-progress",
             title: "In Progress",
             status: "in-progress",
-            tasks: tasks.filter((t) => t.status === "in-progress"),
+            tasks: filteredTasks.filter((t) => t.status === "in-progress"),
         },
         {
             id: "review",
             title: "Review",
             status: "review",
-            tasks: tasks.filter((t) => t.status === "review"),
+            tasks: filteredTasks.filter((t) => t.status === "review"),
         },
         {
             id: "done",
             title: "Done",
             status: "done",
-            tasks: tasks.filter((t) => t.status === "done"),
+            tasks: filteredTasks.filter((t) => t.status === "done"),
         },
     ];
 
@@ -65,18 +74,75 @@ export default function KanbanBoard() {
     };
 
     return (
-        <div className="h-full overflow-x-auto overflow-y-hidden">
-            <div className="flex gap-6 p-6 h-full">
-                {columns.map((column) => (
-                    <KanbanColumn
-                        key={column.id}
-                        column={column}
-                        onDragStart={handleDragStart}
-                        onDragOver={handleDragOver}
-                        onDrop={handleDrop}
-                    />
-                ))}
+        <div className="h-full flex flex-col">
+            {/* Filter Bar - chỉ hiện cho admin/manager */}
+            {isAdminOrManager && unassignedCount > 0 && (
+                <div className="px-6 py-4 bg-white border-b border-slate-200">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2 text-sm text-slate-600">
+                                <UserX className="w-4 h-4 text-orange-500" />
+                                <span>
+                                    <span className="font-semibold text-orange-600">{unassignedCount}</span> task
+                                    {unassignedCount !== 1 ? "s" : ""} not assigned
+                                </span>
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={() => setShowOnlyUnassigned(!showOnlyUnassigned)}
+                            className={`
+                                flex items-center gap-2 px-4 py-2 rounded-lg font-medium 
+                                transition-all duration-200 text-sm
+                                ${
+                                    showOnlyUnassigned
+                                        ? "bg-orange-500 text-white shadow-md hover:bg-orange-600"
+                                        : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                                }
+                            `}>
+                            {showOnlyUnassigned ? (
+                                <>
+                                    <Users className="w-4 h-4" />
+                                    Show All Tasks
+                                </>
+                            ) : (
+                                <>
+                                    <UserX className="w-4 h-4" />
+                                    Show Unassigned Only
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Kanban Board */}
+            <div className="flex-1 overflow-x-auto overflow-y-hidden">
+                <div className="flex gap-6 p-6 h-full">
+                    {columns.map((column) => (
+                        <KanbanColumn
+                            key={column.id}
+                            column={column}
+                            onDragStart={handleDragStart}
+                            onDragOver={handleDragOver}
+                            onDrop={handleDrop}
+                        />
+                    ))}
+                </div>
             </div>
+
+            {/* Empty State khi filter unassigned */}
+            {showOnlyUnassigned && filteredTasks.length === 0 && (
+                <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+                    <div className="text-center p-8">
+                        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
+                            <Users className="w-8 h-8 text-green-600" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-slate-900 mb-2">All tasks are assigned! 🎉</h3>
+                        <p className="text-sm text-slate-600">Great job! Every task has an assignee.</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
