@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -152,9 +152,9 @@ export default function ProfilePage() {
 
             alert("✅ Avatar updated successfully!");
             fetchProfile();
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error uploading avatar:", error);
-            alert(`❌ Failed to upload avatar: ${error.message || "Unknown error"}`);
+            alert("❌ Failed to upload avatar");
         } finally {
             setUploading(false);
         }
