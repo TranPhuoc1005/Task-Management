@@ -29,7 +29,7 @@ interface TaskModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     task?: Task;
-    defaultStatus?: Task["status"];
+    defaultStatus?: Task["status"]; 
 }
 
 export default function TaskModal({
@@ -40,7 +40,7 @@ export default function TaskModal({
 }: TaskModalProps) {
     const { addTask, updateTask } = useTasks();
     const supabase = createClient();
-    const [users, setUsers] = useState<UserProfile[]>([]);
+    const [users, setUsers] = useState<Pick<UserProfile, "id" | "email" | "full_name">[]>([]);
     const isEdit = !!task;
 
     const [formData, setFormData] = useState({

@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
 import { Camera, Mail, Briefcase, Building2, Shield } from "lucide-react";
+import Image from "next/image";
 
 interface UserProfile {
     id: string;
@@ -29,11 +30,7 @@ export default function ProfilePage() {
         department: "",
     });
 
-    useEffect(() => {
-        fetchProfile();
-    }, []);
-
-    async function fetchProfile() {
+    const fetchProfile = useCallback(async () => {
         try {
             const {
                 data: { user },
@@ -47,10 +44,7 @@ export default function ProfilePage() {
                     .single();
 
                 if (!error && profileData) {
-                    const fullProfile = {
-                        ...profileData,
-                        email: user.email || "",
-                    };
+                    const fullProfile = { ...profileData, email: user.email || "" };
                     setProfile(fullProfile);
                     setFormData({
                         full_name: profileData.full_name || "",
@@ -63,7 +57,7 @@ export default function ProfilePage() {
         } finally {
             setLoading(false);
         }
-    }
+    }, [supabase]);
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -128,12 +122,10 @@ export default function ProfilePage() {
             const fileExt = file.name.split(".").pop();
             const fileName = `${user.id}/${Date.now()}.${fileExt}`;
 
-            const { error: uploadError } = await supabase.storage
-                .from("avatars")
-                .upload(fileName, file, {
-                    cacheControl: "3600",
-                    upsert: false,
-                });
+            const { error: uploadError } = await supabase.storage.from("avatars").upload(fileName, file, {
+                cacheControl: "3600",
+                upsert: false,
+            });
 
             if (uploadError) {
                 console.error("Upload error:", uploadError);
@@ -210,7 +202,7 @@ export default function ProfilePage() {
                     <div className="relative">
                         <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center overflow-hidden">
                             {profile?.avatar_url ? (
-                                <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                                <Image src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
                             ) : (
                                 <span className="text-2xl font-bold text-white">
                                     {getInitials(profile?.full_name || null)}
