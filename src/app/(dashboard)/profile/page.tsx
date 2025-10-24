@@ -206,7 +206,7 @@ export default function ProfilePage() {
                     <div className="relative">
                         <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center overflow-hidden">
                             {profile?.avatar_url ? (
-                                <Image src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                                <Image src={profile.avatar_url} width={96} height={96} alt="Avatar" className="w-full h-full object-cover" />
                             ) : (
                                 <span className="text-2xl font-bold text-white">
                                     {getInitials(profile?.full_name || null)}
