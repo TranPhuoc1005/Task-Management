@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { LayoutDashboard, CheckSquare, Users, Settings, Calendar, X, User, LogOut, ChevronDown } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import Image from "next/image";
 
 interface SidebarProps {
     isOpen: boolean;
@@ -53,7 +54,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         }
 
         getUserData();
-    }, []);
+    }, [supabase]);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -149,7 +150,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                             className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-colors">
                             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
                                 {userProfile?.avatar_url ? (
-                                    <img
+                                    <Image
                                         src={userProfile.avatar_url}
                                         alt="Avatar"
                                         className="w-full h-full object-cover"

@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
+import { UserProfile } from "@/types/user";
 
 interface TaskModalProps {
     open: boolean;
@@ -39,7 +40,7 @@ export default function TaskModal({
 }: TaskModalProps) {
     const { addTask, updateTask } = useTasks();
     const supabase = createClient();
-    const [users, setUsers] = useState<any[]>([]);
+    const [users, setUsers] = useState<UserProfile[]>([]);
     const isEdit = !!task;
 
     const [formData, setFormData] = useState({

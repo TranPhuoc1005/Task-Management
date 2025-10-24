@@ -14,16 +14,16 @@ export async function createServerSupabaseClient() {
                 },
                 set(name: string, value: string, options: CookieOptions) {
                     try {
-                        cookieStore.set({ name, value, ...options })
+                        cookieStore.set({ name, value, ...options });
                     } catch (error) {
-                        // Server Component không thể set cookies
+                        console.log(error);
                     }
                 },
                 remove(name: string, options: CookieOptions) {
                     try {
-                        cookieStore.set({ name, value: '', ...options })
+                        cookieStore.set({ name, value: '', ...options });
                     } catch (error) {
-                        // Server Component không thể remove cookies
+                        console.log(error);
                     }
                 },
             },

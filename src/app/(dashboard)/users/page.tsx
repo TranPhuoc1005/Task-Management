@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,31 +31,24 @@ export default function AdminUsersPage() {
         department: "",
     });
 
-    useEffect(() => {
-        checkAccess();
-        fetchUsers();
-    }, []);
-
-    async function checkAccess() {
+    const checkAccess = useCallback(async () => {
         const {
             data: { user },
         } = await supabase.auth.getUser();
         if (user) {
+            setCurrentUserId(user.id);
             const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-
             if (profile) {
                 setCurrentUserRole(profile.role);
-                // Redirect if not admin or manager
                 if (profile.role !== "admin" && profile.role !== "manager") {
                     window.location.href = "/";
                 }
             }
         }
-    }
+    }, [supabase]);
 
-    async function fetchUsers() {
+    const fetchUsers = useCallback(async () => {
         const { data, error } = await supabase.from("profiles").select("*").order("created_at", { ascending: false });
-
         if (error) {
             console.error("Error fetching users:", error);
             alert(`❌ Error loading users: ${error.message}`);
@@ -63,7 +56,12 @@ export default function AdminUsersPage() {
             setUsers(data);
         }
         setLoading(false);
-    }
+    }, [supabase]);
+
+    useEffect(() => {
+        checkAccess();
+        fetchUsers();
+    }, [checkAccess, fetchUsers]);
 
     async function handleCreateUser(e: React.FormEvent) {
         e.preventDefault();
@@ -91,9 +89,9 @@ export default function AdminUsersPage() {
             } else {
                 alert(`❌ Error: ${result.error || "Unknown error"}`);
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Create user error:", error);
-            alert(`❌ Failed to create user: ${error.message || "Unknown error"}`);
+            alert("❌ Failed to create user:Unknown error");
         }
     }
 
@@ -121,9 +119,9 @@ export default function AdminUsersPage() {
                 alert("✅ Role updated successfully!");
                 fetchUsers();
             }
-        } catch (error: any) {
-            console.error("Update role error:", error);
-            alert(`❌ Failed to update role: ${error.message || "Unknown error"}`);
+        } catch (error: unknown) {
+            console.error("Create user error:", error);
+            alert("❌ Failed to create user:Unknown error");
             fetchUsers();
         }
     }
@@ -159,9 +157,9 @@ export default function AdminUsersPage() {
                 alert("✅ User deleted successfully!");
                 fetchUsers();
             }
-        } catch (error: any) {
-            console.error("Delete user error:", error);
-            alert(`❌ Failed to delete user: ${error.message || "Unknown error"}`);
+        } catch (error: unknown) {
+            console.error("Create user error:", error);
+            alert("❌ Failed to create user:Unknown error");
         }
     }
 

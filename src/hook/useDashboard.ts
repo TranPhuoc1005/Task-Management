@@ -146,7 +146,6 @@ export function useDashboard() {
         },
     ];
 
-    // Recent tasks (10 tasks gần nhất)
     const recentTasks: RecentTask[] = tasks.slice(0, 10).map((task) => ({
         id: task.id,
         title: task.title,

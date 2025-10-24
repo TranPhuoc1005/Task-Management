@@ -120,18 +120,15 @@ export default function ProfilePage() {
             } = await supabase.auth.getUser();
             if (!user) throw new Error("No user found");
 
-            // Delete old avatar if exists
             if (profile?.avatar_url) {
                 const oldPath = profile.avatar_url.split("/").slice(-2).join("/");
                 await supabase.storage.from("avatars").remove([oldPath]);
             }
 
-            // Create unique file name
             const fileExt = file.name.split(".").pop();
             const fileName = `${user.id}/${Date.now()}.${fileExt}`;
 
-            // Upload to Supabase Storage
-            const { data: uploadData, error: uploadError } = await supabase.storage
+            const { error: uploadError } = await supabase.storage
                 .from("avatars")
                 .upload(fileName, file, {
                     cacheControl: "3600",

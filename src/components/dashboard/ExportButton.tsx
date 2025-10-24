@@ -2,11 +2,11 @@
 
 import { Download, FileText, FileSpreadsheet } from "lucide-react";
 import { useState } from "react";
-import { DashboardStats } from "@/hook/useDashboard";
+import { DashboardStats, RecentTask } from "@/hook/useDashboard";
 
 interface ExportButtonProps {
     stats: DashboardStats;
-    tasks: any[];
+    tasks: RecentTask[];
 }
 
 export default function ExportButton({ stats, tasks }: ExportButtonProps) {
@@ -20,7 +20,7 @@ export default function ExportButton({ stats, tasks }: ExportButtonProps) {
             task.priority,
             task.assignee || "Unassigned",
             task.due_date || "No due date",
-            new Date(task.created_at).toLocaleDateString(),
+            task.created_at ? new Date(task.created_at).toLocaleDateString() : ''
         ]);
 
         const csv = [headers.join(","), ...rows.map((row) => row.map((cell) => `"${cell}"`).join(","))].join("\n");
