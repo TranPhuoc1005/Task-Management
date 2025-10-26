@@ -8,15 +8,15 @@ export async function PATCH(req: Request) {
 
         if (!membershipId || !role) {
             return NextResponse.json(
-                { error: "membershipId and role are required" }, 
+                { error: "membershipId and role are required" },
                 { status: 400 }
             );
         }
 
         const supabase = await createServerSupabaseClient();
-        
+
         const { data: { user }, error: authError } = await supabase.auth.getUser();
-        
+
         if (authError || !user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
@@ -54,7 +54,10 @@ export async function PATCH(req: Request) {
         }
 
         return NextResponse.json({ data });
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+        return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
     }
 }

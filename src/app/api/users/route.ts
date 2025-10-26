@@ -32,8 +32,11 @@ export async function GET() {
         }
 
         return NextResponse.json({ data });
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+        return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
     }
 }
 
@@ -81,7 +84,10 @@ export async function DELETE(req: Request) {
         }
 
         return NextResponse.json({ message: "User deleted successfully" });
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+        return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
     }
 }

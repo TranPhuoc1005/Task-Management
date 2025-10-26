@@ -1,7 +1,7 @@
 "use client";
 
 import { useTeams } from "@/hook/useTeams";
-import { Users, Mail, Phone, MapPin, Shield, Crown } from "lucide-react";
+import { Users, Mail, MapPin, Shield, Crown } from "lucide-react";
 
 export default function TeamPage() {
     const { teamsQuery, teamMembersQuery, currentUser } = useTeams();
@@ -17,7 +17,6 @@ export default function TeamPage() {
     const teams = teamsQuery.data || [];
     const allMembers = teamMembersQuery.data || [];
 
-    // Group members by team
     const membersByTeam = allMembers.reduce((acc, member) => {
         const teamId = member.team_id;
         if (!acc[teamId]) acc[teamId] = [];
@@ -25,7 +24,6 @@ export default function TeamPage() {
         return acc;
     }, {} as Record<string, typeof allMembers>);
 
-    // Calculate stats
     const totalMembers = allMembers.length;
     const totalTeams = teams.length;
 
@@ -90,7 +88,6 @@ export default function TeamPage() {
             {/* Teams Grid */}
             {teams.map((team) => {
                 const teamMembers = membersByTeam[team.id] || [];
-                const teamLead = teamMembers.find((m) => m.role === "team_lead");
 
                 return (
                     <div key={team.id} className="bg-white rounded-xl border border-slate-200 p-6 mb-6">

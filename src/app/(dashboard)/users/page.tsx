@@ -52,6 +52,7 @@ export default function AdminUsersPage() {
             }
         } catch (error) {
             alert("❌ Failed to create user");
+            console.log(error)
         }
     }
 
