@@ -5,7 +5,7 @@ import { useTasks } from "@/hook/useTasks";
 import { Filter, SlidersHorizontal } from "lucide-react";
 
 export default function TasksPage() {
-    const { tasksQuery, currentUser } = useTasks();
+    const { currentUser } = useTasks();
 
     if (!currentUser) {
         return <div>Loading...</div>;
