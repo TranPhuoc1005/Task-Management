@@ -10,10 +10,6 @@ export default function TasksPage() {
     if (!currentUser) {
         return <div>Loading...</div>;
     }
-
-    if (tasksQuery.isLoading) {
-        return <div>Loading tasks...</div>;
-    }
     return (
         <div className="flex flex-col h-full">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-white">

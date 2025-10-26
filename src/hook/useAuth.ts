@@ -10,11 +10,14 @@ const supabase = createClient();
 
 export function useAuth() {
     const [user, setUser] = useState<User | null>(null);
+    const [authLoading, setAuthLoading] = useState(true);
 
     useEffect(() => {
         const initAuth = async () => {
+            setAuthLoading(true);
             const { data: { session } } = await supabase.auth.getSession();
             setUser(session?.user ?? null);
+            setAuthLoading(false);
         };
 
         initAuth();
@@ -37,15 +40,16 @@ export function useAuth() {
 
     const currentUser = user ? {
         ...user,
-        profile: profileQuery.data
+        profile: profileQuery.data,
     } : null;
+
+    const isLoading = authLoading || profileQuery.isLoading;
 
     return {
         user,
         profile: profileQuery.data,
         profileQuery,
         currentUser,
-        isLoading: profileQuery.isLoading,
-        isAuthenticated: !!user,
+        isLoading,
     };
 }

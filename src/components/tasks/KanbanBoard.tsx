@@ -24,7 +24,6 @@ export default function KanbanBoard() {
         return (tasksQuery.data || []).filter((task) => !task.user_id).length;
     }, [tasksQuery.data]);
 
-    if (tasksQuery.isLoading) return <p className="p-6">Loading tasks...</p>;
     if (tasksQuery.error) return <p className="p-6 text-red-500">Error: {tasksQuery.error.message}</p>;
 
     const columns: Column[] = [

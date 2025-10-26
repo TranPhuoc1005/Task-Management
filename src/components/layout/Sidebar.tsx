@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { LayoutDashboard, CheckSquare, Users, Settings, Calendar, X, User, LogOut, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { useAuth } from "@/hook/useAuth";
+import { createClient } from "@/lib/supabase/client";
 
 interface SidebarProps {
     isOpen: boolean;
@@ -15,11 +16,12 @@ interface SidebarProps {
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     const pathname = usePathname();
     const router = useRouter();
-    const { user, profile, isAuthenticated } = useAuth();
+    const { user, profile, isLoading } = useAuth();
     const [showDropdown, setShowDropdown] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const supabase = createClient();
 
-    // Close dropdown when clicking outside
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -54,11 +56,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     };
 
     const handleLogout = async () => {
-        localStorage.clear();
+        setIsLoggingOut(true);
+        await supabase.auth.signOut();
+        // Redirect to login
         router.push("/login");
+        router.refresh();
     };
-
-    if (!isAuthenticated) return null; // chưa đăng nhập thì ẩn sidebar
 
     return (
         <>
@@ -126,7 +129,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                                 )}
                             </div>
                             <div className="flex-1 min-w-0 text-left">
-                                <p className="text-sm font-medium truncate">{profile?.full_name || "Loading..."}</p>
+                                <p className="text-sm font-medium truncate">
+                                    {isLoading ? "Loading..." : profile?.full_name || user?.email || "Unknown User"}
+                                </p>
                                 <p className="text-xs text-slate-400 truncate">{user?.email || ""}</p>
                             </div>
                             <ChevronDown
@@ -147,9 +152,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                                 </Link>
                                 <button
                                     onClick={handleLogout}
-                                    className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-slate-700 transition-colors text-red-400">
+                                    disabled={isLoggingOut}
+                                    className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-slate-700 transition-colors text-red-400 disabled:opacity-50">
                                     <LogOut className="w-4 h-4" />
-                                    <span className="text-sm">Logout</span>
+                                    <span className="text-sm">{isLoggingOut ? "Logging out..." : "Logout"}</span>
                                 </button>
                             </div>
                         )}
