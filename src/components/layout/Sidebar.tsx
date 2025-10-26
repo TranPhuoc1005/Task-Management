@@ -81,7 +81,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                             <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
                                 <CheckSquare className="w-5 h-5" />
                             </div>
-                            <span className="text-xl font-bold">TaskPro</span>
+                            <span className="text-xl font-bold">TaskPro THP</span>
                         </Link>
                         <button onClick={onClose} className="lg:hidden text-slate-400 hover:text-white">
                             <X className="w-5 h-5" />
