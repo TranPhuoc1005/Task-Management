@@ -7,7 +7,7 @@ import { useTasks } from "@/hook/useTasks";
 import { UserX, Users } from "lucide-react";
 
 export default function KanbanBoard() {
-    const { tasksQuery, moveTasks, currentUser } = useTasks();
+    const { tasksQuery, moveTask, currentUser } = useTasks();
     const [draggedTask, setDraggedTask] = useState<Task | null>(null);
     const [showOnlyUnassigned, setShowOnlyUnassigned] = useState(false);
 

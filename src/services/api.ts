@@ -1,9 +1,7 @@
-// File: /services/api.ts
 import { createClient } from "@/lib/supabase/client";
 
 const supabase = createClient();
 
-// API Configuration
 const API_CONFIG = {
     baseURL: process.env.NEXT_PUBLIC_API_URL || "",
     timeout: 30000,
@@ -15,15 +13,19 @@ async function getAuthToken(): Promise<string | null> {
     return session?.access_token || null;
 }
 
-// Generic request handler
-async function request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-): Promise<T> {
+interface ApiError extends Error {
+    status?: number;
+    data?: unknown;
+}
+
+async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     try {
         const token = await getAuthToken();
-        
-        const url = endpoint.startsWith('http') ? endpoint : `${API_CONFIG.baseURL}${endpoint}`;
+
+        const url = endpoint.startsWith("http")
+            ? endpoint
+            : `${API_CONFIG.baseURL}${endpoint}`;
+
         const config: RequestInit = {
             ...options,
             headers: {
@@ -44,89 +46,106 @@ async function request<T>(
         clearTimeout(timeoutId);
 
         if (!response.ok) {
-            let errorData: any = null;
-            
+            let errorData: unknown = null; // ✅ dùng unknown thay vì any
+
             try {
                 errorData = await response.json();
             } catch (parseError) {
                 console.error("❌ Failed to parse error response:", parseError);
                 errorData = { error: response.statusText };
             }
-            
-            // Debug log
-            console.error(`❌ API Error [${options.method || 'GET'}] ${endpoint}:`, {
+
+            console.error(`❌ API Error [${options.method || "GET"}] ${endpoint}:`, {
                 status: response.status,
                 statusText: response.statusText,
                 data: errorData,
             });
-            
-            // Extract error message with multiple fallbacks
-            const errorMessage = 
-                (typeof errorData?.error === 'string' ? errorData.error : null) ||
-                (typeof errorData?.message === 'string' ? errorData.message : null) ||
-                (typeof errorData?.details === 'string' ? errorData.details : null) ||
+
+            const extractMessage = (data: unknown): string | null => {
+                if (typeof data === "object" && data !== null) {
+                    const obj = data as Record<string, unknown>;
+                    return (
+                        (typeof obj.error === "string" && obj.error) ||
+                        (typeof obj.message === "string" && obj.message) ||
+                        (typeof obj.details === "string" && obj.details) ||
+                        null
+                    );
+                }
+                return null;
+            };
+
+            const errorMessage =
+                extractMessage(errorData) ||
                 `HTTP ${response.status}: ${response.statusText}`;
-            
-            const error = new Error(errorMessage);
-            (error as any).status = response.status;
-            (error as any).data = errorData;
+
+            const error: ApiError = new Error(errorMessage);
+            error.status = response.status;
+            error.data = errorData;
             throw error;
         }
 
-        // Nếu response empty (204 No Content)
         const contentType = response.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
             return {} as T;
         }
 
-        return await response.json();
-    } catch (error: any) {
-        if (error.name === 'AbortError') {
-            console.error(`⏱️ Request timeout [${options.method || 'GET'}] ${endpoint}`);
-            throw new Error('Request timeout');
+        return (await response.json()) as T;
+    } catch (error: unknown) { // ✅ unknown thay cho any
+        if (error instanceof Error && error.name === "AbortError") {
+            console.error(`⏱️ Request timeout [${options.method || "GET"}] ${endpoint}`);
+            throw new Error("Request timeout");
         }
-        
-        // Re-throw if already handled
-        if (error.status) {
+
+        if (typeof error === "object" && error && "status" in error) {
             throw error;
         }
-        
-        // Unknown error
-        console.error(`🔥 Unexpected error [${options.method || 'GET'}] ${endpoint}:`, error);
+
+        console.error(
+            `🔥 Unexpected error [${options.method || "GET"}] ${endpoint}:`,
+            error
+        );
         throw error;
     }
 }
 
 // API Client
 const api = {
-    get: <T>(endpoint: string, options?: RequestInit): Promise<T> => 
+    get: <T>(endpoint: string, options?: RequestInit): Promise<T> =>
         request<T>(endpoint, { ...options, method: "GET" }),
 
-    post: <T>(endpoint: string, data?: any, options?: RequestInit): Promise<T> => {
+    post: <T, D = unknown>(endpoint: string, data?: D, options?: RequestInit): Promise<T> => {
         const isFormData = data instanceof FormData;
         return request<T>(endpoint, {
             ...options,
             method: "POST",
-            body: isFormData ? data : JSON.stringify(data),
+            body: isFormData ? (data as FormData) : JSON.stringify(data),
             headers: isFormData ? {} : options?.headers,
         });
     },
 
-    put: <T>(endpoint: string, data?: any, options?: RequestInit): Promise<T> => 
+    put: <T, D = unknown>(
+        endpoint: string,
+        data?: D,
+        options?: RequestInit
+    ): Promise<T> =>
         request<T>(endpoint, {
             ...options,
             method: "PUT",
             body: JSON.stringify(data),
         }),
 
-    patch: <T>(endpoint: string, data?: any, options?: RequestInit): Promise<T> => 
+    patch: <T, D = unknown>(
+        endpoint: string,
+        data?: D,
+        options?: RequestInit
+    ): Promise<T> =>
         request<T>(endpoint, {
             ...options,
             method: "PATCH",
             body: JSON.stringify(data),
         }),
 
-    delete: <T>(endpoint: string, options?: RequestInit): Promise<T> => 
+    delete: <T>(endpoint: string, options?: RequestInit): Promise<T> =>
         request<T>(endpoint, { ...options, method: "DELETE" }),
 };
 

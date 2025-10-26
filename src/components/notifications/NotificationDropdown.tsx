@@ -1,14 +1,6 @@
 "use client";
 
-import {
-    Bell,
-    BellRing,
-    Clock,
-    Trash2,
-    Edit,
-    CheckCircle,
-    UserPlus,
-} from "lucide-react";
+import { Bell, BellRing, Clock, Trash2, Edit, CheckCircle, UserPlus } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -18,7 +10,8 @@ import {
     DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import { useNotifications, ActivityLog } from "@/hook/useNotifications";
+import { useNotifications } from "@/hook/useNotifications";
+import { ActivityLog } from "@/types/notifications";
 
 export default function NotificationDropdown() {
     const { dueSoonTasks, recentActivities, totalNotifications, isLoading } = useNotifications();
@@ -159,10 +152,7 @@ export default function NotificationDropdown() {
                 </button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent
-                align="end"
-                className="w-96 max-h-[500px] overflow-y-auto"
-            >
+            <DropdownMenuContent align="end" className="w-96 max-h-[500px] overflow-y-auto">
                 <div className="px-4 py-3 border-b sticky top-0 bg-white z-10">
                     <h3 className="font-semibold text-slate-900">Thông báo</h3>
                     <p className="text-sm text-slate-600">
@@ -175,9 +165,7 @@ export default function NotificationDropdown() {
                 {isLoading ? (
                     <div className="p-8 text-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                        <p className="text-sm text-slate-600 mt-2">
-                            Đang tải...
-                        </p>
+                        <p className="text-sm text-slate-600 mt-2">Đang tải...</p>
                     </div>
                 ) : totalNotifications === 0 ? (
                     <div className="p-8 text-center text-slate-500">
@@ -194,47 +182,33 @@ export default function NotificationDropdown() {
                                     ⏰ Sắp đến hạn
                                 </DropdownMenuLabel>
                                 {dueSoonTasks.map((task) => (
-                                    <Link
-                                        key={task.id}
-                                        href={`/tasks?taskId=${task.id}`}
-                                    >
+                                    <Link key={task.id} href={`/tasks?taskId=${task.id}`}>
                                         <DropdownMenuItem className="px-4 py-3 cursor-pointer flex-col items-start hover:bg-slate-50">
                                             <div className="flex items-start justify-between w-full mb-1">
-                                                <p className="font-medium text-slate-900 flex-1 pr-2">
-                                                    {task.title}
-                                                </p>
+                                                <p className="font-medium text-slate-900 flex-1 pr-2">{task.title}</p>
                                                 <span
                                                     className={`text-xs px-2 py-1 rounded-full font-medium ${
                                                         task.priority === "high"
                                                             ? "bg-red-100 text-red-700"
-                                                            : task.priority ===
-                                                              "medium"
+                                                            : task.priority === "medium"
                                                             ? "bg-yellow-100 text-yellow-700"
                                                             : "bg-blue-100 text-blue-700"
-                                                    }`}
-                                                >
+                                                    }`}>
                                                     {task.priority}
                                                 </span>
                                             </div>
                                             <div className="flex items-center gap-3 text-xs text-slate-600 mt-1">
                                                 <span className="flex items-center gap-1">
                                                     <Clock className="w-3 h-3" />
-                                                    Còn{" "}
-                                                    {getHoursLeft(
-                                                        task.due_date!
-                                                    )}
+                                                    Còn {getHoursLeft(task.due_date!)}
                                                 </span>
                                                 {task.assignee && (
-                                                    <span className="flex items-center gap-1">
-                                                        👤 {task.assignee}
-                                                    </span>
+                                                    <span className="flex items-center gap-1">👤 {task.assignee}</span>
                                                 )}
                                             </div>
                                             <div className="text-xs text-slate-400 mt-1">
                                                 📅{" "}
-                                                {new Date(
-                                                    task.due_date!
-                                                ).toLocaleDateString("vi-VN", {
+                                                {new Date(task.due_date!).toLocaleDateString("vi-VN", {
                                                     day: "2-digit",
                                                     month: "2-digit",
                                                     year: "numeric",
@@ -254,73 +228,45 @@ export default function NotificationDropdown() {
                                 <DropdownMenuLabel className="px-4 py-2 text-xs font-semibold text-slate-500 uppercase">
                                     📋 Hoạt động gần đây
                                 </DropdownMenuLabel>
-                                {recentActivities
-                                    .slice(0, 8)
-                                    .map((activity) => (
-                                        <Link
-                                            key={activity.id}
-                                            href={`/tasks?taskId=${activity.task_id}`}
-                                        >
-                                            <DropdownMenuItem className="px-4 py-3 cursor-pointer flex-col items-start hover:bg-slate-50">
-                                                <div className="flex items-start justify-between w-full mb-2">
-                                                    <div className="flex items-start gap-2 flex-1">
-                                                        <span className="mt-0.5">
-                                                            {getActivityIcon(
-                                                                activity.action
-                                                            )}
-                                                        </span>
-                                                        <div className="flex-1">
-                                                            <p className="font-medium text-slate-900 text-sm">
-                                                                {activity.task_title ||
-                                                                    activity
-                                                                        .task
-                                                                        ?.title}
-                                                            </p>
-                                                            <p className="text-xs text-slate-600 mt-0.5">
-                                                                {getActivityText(
-                                                                    activity
-                                                                )}
-                                                            </p>
-                                                        </div>
+                                {recentActivities.slice(0, 8).map((activity) => (
+                                    <Link key={activity.id} href={`/tasks?taskId=${activity.task_id}`}>
+                                        <DropdownMenuItem className="px-4 py-3 cursor-pointer flex-col items-start hover:bg-slate-50">
+                                            <div className="flex items-start justify-between w-full mb-2">
+                                                <div className="flex items-start gap-2 flex-1">
+                                                    <span className="mt-0.5">{getActivityIcon(activity.action)}</span>
+                                                    <div className="flex-1">
+                                                        <p className="font-medium text-slate-900 text-sm">
+                                                            {activity.task_title || activity.task?.title}
+                                                        </p>
+                                                        <p className="text-xs text-slate-600 mt-0.5">
+                                                            {getActivityText(activity)}
+                                                        </p>
                                                     </div>
-                                                    <span className="text-xs text-slate-500 whitespace-nowrap ml-2">
-                                                        {formatTimeAgo(
-                                                            activity.created_at
-                                                        )}
-                                                    </span>
                                                 </div>
-                                                <div className="flex items-center justify-between w-full text-xs">
-                                                    <span className="text-slate-400">
-                                                        🕐{" "}
-                                                        {formatExactTime(
-                                                            activity.created_at
-                                                        )}
+                                                <span className="text-xs text-slate-500 whitespace-nowrap ml-2">
+                                                    {formatTimeAgo(activity.created_at)}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center justify-between w-full text-xs">
+                                                <span className="text-slate-400">
+                                                    🕐 {formatExactTime(activity.created_at)}
+                                                </span>
+                                                {activity.task?.status && (
+                                                    <span
+                                                        className={`px-2 py-0.5 rounded-full text-xs ${
+                                                            activity.task.status === "done"
+                                                                ? "bg-green-100 text-green-700"
+                                                                : activity.task.status === "in-progress"
+                                                                ? "bg-blue-100 text-blue-700"
+                                                                : "bg-slate-100 text-slate-700"
+                                                        }`}>
+                                                        {activity.task.status}
                                                     </span>
-                                                    {activity.task?.status && (
-                                                        <span
-                                                            className={`px-2 py-0.5 rounded-full text-xs ${
-                                                                activity.task
-                                                                    .status ===
-                                                                "done"
-                                                                    ? "bg-green-100 text-green-700"
-                                                                    : activity
-                                                                          .task
-                                                                          .status ===
-                                                                      "in-progress"
-                                                                    ? "bg-blue-100 text-blue-700"
-                                                                    : "bg-slate-100 text-slate-700"
-                                                            }`}
-                                                        >
-                                                            {
-                                                                activity.task
-                                                                    .status
-                                                            }
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </DropdownMenuItem>
-                                        </Link>
-                                    ))}
+                                                )}
+                                            </div>
+                                        </DropdownMenuItem>
+                                    </Link>
+                                ))}
                             </>
                         )}
                     </>
