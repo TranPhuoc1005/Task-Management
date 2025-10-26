@@ -24,8 +24,6 @@ export function useNotifications() {
 
     // Setup realtime subscription
     useEffect(() => {
-        console.log('🔌 Setting up realtime subscription...');
-
         const channel = supabase
             .channel('notifications-realtime')
             .on(
@@ -36,7 +34,6 @@ export function useNotifications() {
                     table: 'tasks'
                 },
                 (payload) => {
-                    console.log('📢 Task changed (realtime):', payload);
                     // Invalidate queries khi có thay đổi
                     queryClient.invalidateQueries({ queryKey: ["notifications", "due-soon"] });
                     queryClient.invalidateQueries({ queryKey: ["notifications", "recent-activities"] });
@@ -50,23 +47,17 @@ export function useNotifications() {
                     table: 'task_activities'
                 },
                 (payload) => {
-                    console.log('📢 Activity changed (realtime):', payload);
-                    // Invalidate khi có activity mới
                     queryClient.invalidateQueries({ queryKey: ["notifications", "recent-activities"] });
                 }
             )
             .subscribe((status) => {
                 if (status === 'SUBSCRIBED') {
-                    console.log('✅ Realtime subscription ACTIVE');
                 } else if (status === 'CHANNEL_ERROR') {
-                    console.error('❌ Realtime subscription ERROR');
                 } else {
-                    console.log('🔄 Realtime status:', status);
                 }
             });
 
         return () => {
-            console.log('🔌 Cleaning up realtime subscription');
             supabase.removeChannel(channel);
         };
     }, [queryClient]);
@@ -111,9 +102,6 @@ export function useNotifications() {
                 .order("created_at", { ascending: false });
 
             if (activitiesError) {
-                console.error("Error fetching activities:", activitiesError);
-
-                // Fallback: Lấy tasks mới created/updated
                 const { data: tasks, error: tasksError } = await supabase
                     .from("tasks")
                     .select("*")

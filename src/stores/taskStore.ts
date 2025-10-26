@@ -4,11 +4,7 @@ import { create } from "zustand";
 interface TaskStore {
     columns: Column[];
     setColumns: (columns: Column[]) => void;
-    moveTask: (
-        taskId: number,
-        fromStatus: Task["status"],
-        toStatus: Task["status"]
-    ) => void;
+    moveTask: ( taskId: number, fromStatus: Task["status"], toStatus: Task["status"]) => void;
     addTask: (task: Task) => void;
     updateTask: (taskId: number, updates: Partial<Task>) => void;
     deleteTask: (taskId: number) => void;
