@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { CheckSquare, Edit, Trash2, UserPlus, Clock } from "lucide-react";
-import { ActivityLog } from "@/hook/useNotifications";
+import { ActivityLog } from "@/types/notifications";
 
 export default function ActivityFeed() {
     // Lấy 10 activities gần nhất
