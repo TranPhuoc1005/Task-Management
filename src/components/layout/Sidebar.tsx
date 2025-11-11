@@ -96,13 +96,16 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                                 <Link
                                     key={index}
                                     href={item.href}
-                                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200
-                                    ${
+                                    onClick={() => {
+                                        if (window.innerWidth < 1024) {
+                                            onClose();
+                                        }
+                                    }}
+                                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 ${
                                         isActive
                                             ? "bg-blue-600 text-white"
                                             : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                                    }
-                                `}>
+                                    }`}>
                                     <item.icon className="w-5 h-5" />
                                     <span className="font-medium">{item.label}</span>
                                 </Link>

@@ -50,3 +50,13 @@ export const removeTaskApi = async (id: number): Promise<void> => {
         throw error;
     }
 };
+
+export const updateDueDateApi = async (id: number, due_date: string): Promise<any> => {
+    try {
+        const response = await api.patch<BaseApiResponse<Task>>("/api/tasks/due-date", { id, due_date });
+        return response.data;
+    } catch (error) {
+        console.error("🌲 ~ updateDueDateApi ~ error:", error);
+        throw error;
+    }
+};

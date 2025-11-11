@@ -8,7 +8,8 @@ import {
     createTaskApi,
     updateTaskApi,
     moveTaskApi,
-    removeTaskApi
+    removeTaskApi,
+    updateDueDateApi
 } from "@/services/task.api";
 
 export function useTasks() {
@@ -51,12 +52,20 @@ export function useTasks() {
         },
     });
 
+    const updateDueDate = useMutation({
+        mutationFn: ({ id, due_date }: { id: number; due_date: string }) => updateDueDateApi(id, due_date),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["tasks"] });
+        },
+    });
+
     return {
         tasksQuery,
         addTask,
         updateTask,
         moveTask,
         deleteTask,
+        updateDueDate,
         currentUser,
     };
 }

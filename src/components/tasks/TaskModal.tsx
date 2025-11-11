@@ -24,9 +24,10 @@ interface TaskModalProps {
     onOpenChange: (open: boolean) => void;
     task?: Task;
     defaultStatus?: Task["status"];
+    defaultDueDate?: string;
 }
 
-export default function TaskModal({ open, onOpenChange, task, defaultStatus }: TaskModalProps) {
+export default function TaskModal({ open, onOpenChange, task, defaultStatus, defaultDueDate }: TaskModalProps) {
     const { addTask, updateTask, currentUser } = useTasks();
     const supabase = createClient();
     const [users, setUsers] = useState<Pick<UserProfile, "id" | "email" | "full_name">[]>([]);
@@ -40,10 +41,19 @@ export default function TaskModal({ open, onOpenChange, task, defaultStatus }: T
         status: task?.status || defaultStatus,
         priority: task?.priority || "medium",
         assignee: task?.assignee || "",
-        dueDate: task?.due_date || "",
+        dueDate: task?.due_date || defaultDueDate || "",
         tags: task?.tags?.join(", ") || "",
         user_id: task?.user_id || "",
     });
+
+    useEffect(() => {
+        if (defaultDueDate && !task) {
+            setFormData((prev) => ({
+                ...prev,
+                dueDate: defaultDueDate,
+            }));
+        }
+    }, [defaultDueDate, task]);
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
