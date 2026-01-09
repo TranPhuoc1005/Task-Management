@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar, DollarSign, Code, Palette, X, Building2, Mail } from "lucide-react";
-import { Project } from "@/types/projects";
+import { Project, ProjectStatus, ProjectType } from "@/types/projects";
 
 interface ProjectModalProps {
     open: boolean;
@@ -231,7 +231,7 @@ export default function ProjectModal({ open, onOpenChange, project, onSubmit, is
                                 <Label htmlFor="project_type">Project Type</Label>
                                 <Select
                                     value={formData.project_type}
-                                    onValueChange={(value) => setFormData({ ...formData, project_type: value as any })}>
+                                    onValueChange={(value: ProjectType) => setFormData({ ...formData, project_type: value })}>
                                     <SelectTrigger id="project_type" className="mt-2">
                                         <SelectValue />
                                     </SelectTrigger>
@@ -249,7 +249,7 @@ export default function ProjectModal({ open, onOpenChange, project, onSubmit, is
                                 <Label htmlFor="status">Status</Label>
                                 <Select
                                     value={formData.status}
-                                    onValueChange={(value) => setFormData({ ...formData, status: value as any })}>
+                                    onValueChange={(value: ProjectStatus) => setFormData({ ...formData, status: value })}>
                                     <SelectTrigger id="status" className="mt-2">
                                         <SelectValue />
                                     </SelectTrigger>
@@ -486,7 +486,7 @@ export default function ProjectModal({ open, onOpenChange, project, onSubmit, is
                             <Label htmlFor="priority">Priority</Label>
                             <Select
                                 value={formData.priority}
-                                onValueChange={(value) => setFormData({ ...formData, priority: value as any })}>
+                                onValueChange={(value: Project["priority"]) => setFormData({ ...formData, priority: value })}>
                                 <SelectTrigger id="priority" className="mt-2">
                                     <SelectValue />
                                 </SelectTrigger>

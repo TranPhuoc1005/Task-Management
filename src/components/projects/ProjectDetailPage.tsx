@@ -526,7 +526,7 @@ export default function ProjectDetailPage({ projectId }: ProjectDetailPageProps)
                                 <BarChart3 className="w-12 h-12 text-slate-400 mx-auto mb-3" />
                                 <p className="text-slate-600 mb-4">Tasks feature coming soon</p>
                                 <p className="text-sm text-slate-500">
-                                    You'll be able to create and manage tasks here
+                                    You&apos;ll be able to create and manage tasks here
                                 </p>
                             </div>
                         </div>
