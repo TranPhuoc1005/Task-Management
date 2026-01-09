@@ -8,6 +8,7 @@ interface TaskStore {
     addTask: (task: Task) => void;
     updateTask: (taskId: number, updates: Partial<Task>) => void;
     deleteTask: (taskId: number) => void;
+    editTask: (taskId: number) => void;
 }
 
 const initialColumns: Column[] = [];
@@ -55,6 +56,12 @@ export const useTaskStore = create<TaskStore>((set) => ({
             columns: newColumns
         }
     }),
+
+    editTask: (taskId) => set((state) => {
+        const newColumns = state.columns.map(item => ({
+            ...item
+        }))
+    })
 
     deleteTask: (taskId) => set((state) => {
         const newColumns = state.columns.map(column => ({

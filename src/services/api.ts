@@ -46,7 +46,7 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
         clearTimeout(timeoutId);
 
         if (!response.ok) {
-            let errorData: unknown = null; // ✅ dùng unknown thay vì any
+            let errorData: unknown = null;
 
             try {
                 errorData = await response.json();

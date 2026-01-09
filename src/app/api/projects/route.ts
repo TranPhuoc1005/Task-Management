@@ -1,0 +1,64 @@
+import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { NextResponse } from "next/server";
+
+export async function PUT(req: Request, { params }: { params: { id: string } }) {
+    try {
+        const body = await req.json();
+        const supabase = await createServerSupabaseClient();
+
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        const { data, error } = await supabase
+            .from("projects")
+            .update({ ...body, updated_at: new Date().toISOString() })
+            .eq("id", params.id)
+            .select()
+            .single();
+
+        if (error) {
+            return NextResponse.json({ error: error.message }, { status: 400 });
+        }
+
+        return NextResponse.json({ data });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+        return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
+    }
+}
+
+export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+    try {
+        const supabase = await createServerSupabaseClient();
+
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        const { error } = await supabase.from("projects").delete().eq("id", params.id);
+
+        if (error) {
+            return NextResponse.json({ error: error.message }, { status: 400 });
+        }
+
+        return NextResponse.json({ message: "Project deleted successfully" });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+        return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
+    }
+}

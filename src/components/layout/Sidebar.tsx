@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { LayoutDashboard, CheckSquare, Users, Settings, Calendar, X, User, LogOut, ChevronDown } from "lucide-react";
+import { LayoutDashboard, CheckSquare, Users, Settings, Calendar, X, User, LogOut, ChevronDown, SquareChartGantt } from "lucide-react";
 import Image from "next/image";
 import { useAuth } from "@/hook/useAuth";
 import { createClient } from "@/lib/supabase/client";
@@ -35,6 +35,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
     const menuItems = [
         { icon: LayoutDashboard, label: "Dashboard", href: "/" },
+        { icon: SquareChartGantt, label: "Projects", href: "/projects" },
         { icon: CheckSquare, label: "Tasks", href: "/tasks" },
         { icon: Calendar, label: "Calendar", href: "/calendar" },
         { icon: Users, label: "Team", href: "/team" },
